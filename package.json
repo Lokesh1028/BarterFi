@@ -5,8 +5,7 @@
   "private": true,
   "workspaces": [
     "contracts",
-    "frontend",
-    "subgraph"
+    "frontend"
   ],
   "scripts": {
     "contracts": "cd contracts && npm run compile",
@@ -14,9 +13,8 @@
     "contracts:deploy": "cd contracts && npm run deploy",
     "frontend": "cd frontend && npm run dev",
     "frontend:build": "cd frontend && npm run build",
-    "subgraph": "cd subgraph && npm run codegen && npm run build",
     "dev": "concurrently \"npm run contracts:test\" \"npm run frontend\"",
-    "build": "npm run contracts && npm run frontend:build && npm run subgraph"
+    "build": "npm run contracts && npm run frontend:build"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

@@ -1,9 +1,11 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+// Remove Google Fonts dependency to fix build issues
+// import { Inter } from 'next/font/google'
 import { Providers } from './providers'
 
-const inter = Inter({ subsets: ['latin'] })
+// Use system fonts instead of Google Fonts to avoid network dependency issues
+// const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'P2P Financial NFT Barter Exchange',
@@ -17,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className="font-sans">
         <Providers>
           {children}
         </Providers>

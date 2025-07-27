@@ -85,6 +85,7 @@ contract BarterExchange is ReentrancyGuard, Ownable {
     ) external nonReentrant returns (uint256) {
         require(offeredNftContract != address(0), "Invalid NFT contract");
         require(requestedAssetContract != address(0), "Invalid requested asset contract");
+        require(uint256(requestedAssetType) <= 1, "Invalid asset type");
         
         // Verify the caller owns the offered NFT
         IERC721 nftContract = IERC721(offeredNftContract);
@@ -221,32 +222,59 @@ contract BarterExchange is ReentrancyGuard, Ownable {
     /**
      * @dev Get all trades by a specific lister
      * @param lister The address of the lister
+     * @param startIndex Starting index for pagination
+     * @param limit Maximum number of trades to return
      */
-    function getTradesByLister(address lister) external view returns (uint256[] memory) {
-        uint256[] memory result = new uint256[](_nextTradeId - 1);
-        uint256 count = 0;
+    function getTradesByLister(address lister, uint256 startIndex, uint256 limit) external view returns (uint256[] memory) {
+        require(limit > 0 && limit <= 100, "Invalid limit: must be 1-100");
         
-        for (uint256 i = 1; i < _nextTradeId; i++) {
+        uint256[] memory tempResult = new uint256[](limit);
+        uint256 count = 0;
+        uint256 currentIndex = 0;
+        
+        for (uint256 i = 1; i < _nextTradeId && count < limit; i++) {
             if (trades[i].lister == lister) {
-                result[count] = i;
-                count++;
+                if (currentIndex >= startIndex) {
+                    tempResult[count] = i;
+                    count++;
+                }
+                currentIndex++;
             }
         }
         
         // Resize array to actual count
-        uint256[] memory finalResult = new uint256[](count);
+        uint256[] memory result = new uint256[](count);
         for (uint256 i = 0; i < count; i++) {
-            finalResult[i] = result[i];
+            result[i] = tempResult[i];
         }
         
-        return finalResult;
+        return result;
+    }
+
+    /**
+     * @dev Get total number of trades by a specific lister
+     * @param lister The address of the lister
+     */
+    function getTradesCountByLister(address lister) external view returns (uint256) {
+        uint256 count = 0;
+        
+        for (uint256 i = 1; i < _nextTradeId; i++) {
+            if (trades[i].lister == lister) {
+                count++;
+            }
+        }
+        
+        return count;
     }
 
     /**
      * @dev Emergency function to pause contract (only owner)
+     * @notice This is a placeholder for future pausable functionality
+     * @dev Currently does nothing but could be extended to add Pausable functionality
      */
-    function pause() external onlyOwner {
-        // Implementation would add pausable functionality if needed
-        // For now, this is a placeholder for future security enhancements
+    function pause() external view onlyOwner {
+        // Placeholder function - could be extended with OpenZeppelin's Pausable
+        // For now, just verify caller is owner
+        require(msg.sender == owner(), "Only owner can call this function");
     }
 } 
