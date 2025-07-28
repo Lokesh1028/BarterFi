@@ -17,12 +17,12 @@ export function useBarterExchange() {
     functionName: 'getNextTradeId',
   })
 
-  // Get trades by lister
+  // Get trades by lister with pagination
   const { data: userTradeIds, refetch: refetchUserTrades } = useContractRead({
     address: contractAddresses.BARTER_EXCHANGE as `0x${string}`,
     abi: BARTER_EXCHANGE_ABI,
     functionName: 'getTradesByLister',
-    args: address ? [address] : undefined,
+    args: address ? [address, 0, 50] : undefined, // Start at 0, limit to 50 trades
     enabled: !!address,
   })
 
@@ -153,7 +153,7 @@ export function useMyTradeIds() {
     address: contract as `0x${string}`,
     abi: BARTER_EXCHANGE_ABI,
     functionName: 'getTradesByLister',
-    args: [address ?? ZERO_ADDRESS],
+    args: [address ?? ZERO_ADDRESS, 0, 50], // Pagination: start at 0, limit 50
     enabled: !!address,
   })
 } 
